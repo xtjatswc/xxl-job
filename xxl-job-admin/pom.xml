@@ -53,6 +53,11 @@
 			<groupId>com.mysql</groupId>
 			<artifactId>mysql-connector-j</artifactId>
 		</dependency>
+		<!-- KingbaseES 驱动（信创改造） -->
+		<dependency>
+			<groupId>com.kingbase8</groupId>
+			<artifactId>kingbase8</artifactId>
+		</dependency>
 
 		<!-- xxl-job-core -->
 		<dependency>

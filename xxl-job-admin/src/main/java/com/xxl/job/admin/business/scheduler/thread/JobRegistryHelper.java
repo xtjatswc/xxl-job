@@ -16,6 +16,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.time.Instant;
+import java.sql.Timestamp;
 
 /**
  * job registry instance helper
@@ -77,14 +79,16 @@ public class JobRegistryHelper {
 				if (groupList!=null && !groupList.isEmpty()) {
 
 					// a、remove dead address (admin/executor)
-					List<Integer> ids = XxlJobAdminBootstrap.getInstance().getXxlJobRegistryMapper().findDead(Const.DEAD_TIMEOUT, new Date());
+					// Kingbase 兼容：日期计算移至 Java 层
+					Timestamp deadline = Timestamp.from(Instant.now().minusSeconds(Const.DEAD_TIMEOUT));
+					List<Integer> ids = XxlJobAdminBootstrap.getInstance().getXxlJobRegistryMapper().findDead(deadline);
 					if (ids!=null && !ids.isEmpty()) {
 						XxlJobAdminBootstrap.getInstance().getXxlJobRegistryMapper().removeDead(ids);
 					}
 
 					// b、fresh online address (appname ： List<address>)
 					HashMap<String, List<String>> appnameAddressMap = new HashMap<>();
-					List<XxlJobRegistry> list = XxlJobAdminBootstrap.getInstance().getXxlJobRegistryMapper().findAll(Const.DEAD_TIMEOUT, new Date());
+					List<XxlJobRegistry> list = XxlJobAdminBootstrap.getInstance().getXxlJobRegistryMapper().findAll(deadline);
 					if (list != null) {
 						for (XxlJobRegistry item: list) {
 							if (RegistTypeEnum.EXECUTOR.name().equals(item.getRegistryGroup())) {

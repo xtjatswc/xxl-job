@@ -24,6 +24,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.*;
+import java.time.Instant;
+import java.sql.Timestamp;
 
 /**
  * job group controller
@@ -182,7 +184,9 @@ public class JobGroupController {
 
 	private List<String> findRegistryByAppName(String appnameParam){
 		HashMap<String, List<String>> appAddressMap = new HashMap<>();
-		List<XxlJobRegistry> list = xxlJobRegistryMapper.findAll(Const.DEAD_TIMEOUT, new Date());
+		// Kingbase 兼容：日期计算移至 Java 层
+		Timestamp deadline = Timestamp.from(Instant.now().minusSeconds(Const.DEAD_TIMEOUT));
+		List<XxlJobRegistry> list = xxlJobRegistryMapper.findAll(deadline);
 		if (CollectionTool.isNotEmpty(list)) {
 			for (XxlJobRegistry item: list) {
 				if (!RegistTypeEnum.EXECUTOR.name().equals(item.getRegistryGroup())) {
